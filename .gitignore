@@ -1,1 +1,4 @@
-token
+conf.json
+conf.*.json
+!conf.example.json
+owners

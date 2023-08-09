@@ -1,21 +1,57 @@
 #!/usr/bin/env python3
 
-SRC = 748375557049417758
-DST = 696572772134158413
-
-from datetime import datetime
 import discord
+import json
+import pickle
+import sys
+
+class Conf():
+    def __init__(self, data):
+        for k in ['src', 'dst', 'token', 'threshold']:
+            if k not in data: raise Exception(f'conf missing key {k}')
+            setattr(self, k, data[k])
+        if self.src == self.dst: raise Exception('wtf')  # sanity check
+
+class Owner():
+    def __init__(self):
+        try:
+            with open('owners', 'rb') as f:
+                self.data = pickle.load(f)
+        except:
+            self.data = {}
+    def get(self, k): return self.data.get(k)
+    def set(self, k, v):
+        self.data[k] = v
+        with open('owners', 'wb') as f:
+            pickle.dump(self.data, f)
+
+conf = Conf(json.load(open('conf.json' if len(sys.argv) < 2 else sys.argv[1])))
+owner = Owner()
+header = lambda msg: f'originally posted by **{msg.author.display_name}** https://discord.com/channels/{msg.guild.id}/{msg.channel.id}/{msg.id}\n'
 
 class LogicLink(discord.Client):
     async def on_ready(self):
-        self.dst_channel = self.get_channel(DST)
+        self.dst_channel = self.get_channel(conf.dst)
 
-    async def on_message(self, message):
-        if message.channel.id == SRC and ('http://' in message.content or 'https://' in message.content):
-            await self.dst_channel.send(f'originally posted by **{message.author.display_name}** https://discord.com/channels/{message.guild.id}/{message.channel.id}/{message.id}\n' + message.content)
+    async def on_message(self, msg):
+        if msg.channel.id == conf.src and ('http://' in msg.content or 'https://' in msg.content):
+            await self.post(msg)
 
-if SRC == DST: raise Exception('wtf')  # sanity check
+    async def on_raw_reaction_add(self, ev):
+        if ev.emoji.name == '📥' and ev.channel_id != conf.dst and (msg := await self.check_react(ev)):
+            await self.post(msg)
 
-intents = discord.Intents.default()
-intents.messages = True
-LogicLink(intents=intents).run(open('token').read())
+        if ev.emoji.name == '📤' and ev.channel_id == conf.dst and (msg := await self.check_react(ev)):
+            await msg.delete()
+
+    async def post(self, message):
+        msg = await self.dst_channel.send(header(message) + message.content)
+        await msg.add_reaction('✅')
+        owner.set(msg.id, message.author.id)
+
+    async def check_react(self, ev):
+        msg = await self.get_channel(ev.channel_id).fetch_message(ev.message_id)
+        if msg.author.id == ev.user_id or owner.get(msg.id) == ev.user_id: return msg
+        if next((r for r in msg.reactions if r.emoji == ev.emoji.name and r.count >= conf.threshold), None): return msg
+
+LogicLink(intents=discord.Intents.all()).run(conf.token)
