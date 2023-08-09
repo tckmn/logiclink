@@ -1,8 +1,9 @@
 {
     "src": [111111111111111111],
     "src_extra": [111111111111111111],
-    "dst": [222222222222222222],
+    "dst": 222222222222222222,
     "admin": 999999999999999999,
     "token": "AAAAAAAAAAAAAAAAAAAAAAAAAA.AAAAAA.AAAAAAAAAAAAAAAAAAAAAAAAA-AAAAAAAAAA-A",
+    "table": "path/to/table/file",
     "threshold": 3
 }
