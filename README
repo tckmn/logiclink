@@ -1,0 +1,23 @@
+this is a bot that automatically mirrors links posted in one channel to another "feed" channel
+
+features:
+
+- emoji reactions to manually mirror messages from arbitrary channels
+- emoji reactions to manually remove messages from feed
+- can automatically add emoji reactions to feed messages, for informational use by others
+- updates feed messages when original message is edited or deleted
+
+how to use:
+
+- write a configuration file (see conf.example.json for structure)
+- run `logiclink.py your/conf/file.json', or just `logiclink.py' which defaults to conf.json in the current directory
+
+configuration:
+
+- src:       source channels, messages posted here with links will automatically get mirrored
+- src_extra: extra source channels, messages posted here with reactions above threshold will get mirrored
+- dst:       destination channel, where to mirror to
+- admin:     user id of the user who is allowed to run !eval (for debugging)
+- token:     discord bot token
+- table:     path to file to store persistent data in
+- threshold: number of non-original-poster reactions necessary to trigger bot actions
