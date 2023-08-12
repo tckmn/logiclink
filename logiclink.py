@@ -49,7 +49,7 @@ class Table():
 conf = Conf(json.load(open('conf.json' if len(sys.argv) < 2 else sys.argv[1])))
 table = Table(conf.table)
 afmt = lambda a: (lambda s: f'\n{"<"*s}{a.url}{">"*s}')(a.is_spoiler())
-fmt = lambda msg: f'originally posted by **{msg.author.display_name}** https://discord.com/channels/{msg.guild.id}/{msg.channel.id}/{msg.id}\n{msg.content}{"".join(map(afmt, msg.attachments))}'
+fmt = lambda msg: f'originally posted by **{msg.author.display_name}** <t:{round(msg.created_at.timestamp())}:R> https://discord.com/channels/{msg.guild.id}/{msg.channel.id}/{msg.id}\n{msg.content}{"".join(map(afmt, msg.attachments))}'
 
 class LogicLink(discord.Client):
     async def on_ready(self):
