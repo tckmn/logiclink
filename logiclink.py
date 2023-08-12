@@ -26,6 +26,7 @@ class Lookup():
     def rm(self):
         self.table.data.pop(self.n)
         self.table.save()
+        self.table.rebuild()
 
 class Table():
     def __init__(self, path):
@@ -33,6 +34,8 @@ class Table():
         try:
             with open(path, 'rb') as f: self.data = pickle.load(f)
         except: self.data = []
+        self.rebuild()
+    def rebuild(self):
         self.lookup = {q: {x[q]: i for i,x in enumerate(self.data)} for q in lookup_keys}
     def save(self):
         with open(self.path, 'wb') as f: pickle.dump(self.data, f)
