@@ -67,6 +67,11 @@ class LogicLink(discord.Client):
         if ev.emoji.name == '📥' and ev.channel_id in conf.src_extra and (msg := await self.check_react(ev)):
             await self.post(msg)
 
+        if ev.emoji.name == '📤' and ev.channel_id in (conf.src + conf.src_extra) and (msg := await self.check_react(ev)):
+            if (res := table.by(ORIG, msg.id)).has():
+                feedmsg = await self.dst_channel.fetch_message(res.at(FEED))
+                await self.unpost(feedmsg)
+
         if ev.emoji.name == '📤' and ev.channel_id == conf.dst and (msg := await self.check_react(ev)):
             await self.unpost(msg)
 
