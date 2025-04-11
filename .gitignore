@@ -4,3 +4,4 @@ conf.*.json
 owners
 table
 table-*
+log
