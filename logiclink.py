@@ -89,7 +89,7 @@ class LogicLink(discord.Client):
         if (res := table.by(ORIG, ev.message_id)).has():
             origmsg = await self.get_channel(ev.channel_id).fetch_message(ev.message_id)
             feedmsg = await self.dst_channel.fetch_message(res.at(FEED))
-            await feedmsg.edit(content=fmt(origmsg))
+            await feedmsg.edit(content=fmt(origmsg), allowed_mentions=discord.AllowedMentions(users=False))
 
     async def on_raw_message_delete(self, ev):
         if (res := table.by(ORIG, ev.message_id)).has():
