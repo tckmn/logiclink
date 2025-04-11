@@ -64,7 +64,7 @@ class LogicLink(discord.Client):
             await msg.reply(await locals()['__stupid'](self))
 
     async def on_raw_reaction_add(self, ev):
-        if ev.emoji.name == '📥' and ev.channel_id in conf.src_extra and (msg := await self.check_react(ev)):
+        if ev.emoji.name == '📥' and ev.channel_id in (conf.src + conf.src_extra) and (msg := await self.check_react(ev)):
             await self.post(msg)
 
         if ev.emoji.name == '📤' and ev.channel_id in (conf.src + conf.src_extra) and (msg := await self.check_react(ev)):
